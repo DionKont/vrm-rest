@@ -21,6 +21,8 @@ class OrderList(Resource):
 
             db.session.commit()
 
+            # Placeholder for logic to notify the kitchen (not implemented)
+
             return {'message': 'Orders received successfully', 'orders': orders}, 201
 
         except KeyError as e:
