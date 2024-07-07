@@ -6,24 +6,41 @@ from resources.product import ProductList, ProductResource
 from resources.order import OrderList
 
 def create_app():
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///restaurant.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    try:
+        # Initialize Flask app
+        app = Flask(__name__)
 
-    db.init_app(app)
+        # Database configuration
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///restaurant.db'
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    api = Api(app)
+        # Initialize SQLAlchemy with Flask app
+        db.init_app(app)
 
-    api.add_resource(HelloWorld, '/')
-    api.add_resource(ProductList, '/products')
-    api.add_resource(ProductResource, '/products/<int:product_id>')
-    api.add_resource(OrderList, '/orders')
+        # Initialize Flask-RESTful Api with Flask app
+        api = Api(app)
 
-    with app.app_context():
-        db.create_all()
+        # Register resource routes
+        api.add_resource(HelloWorld, '/')
+        api.add_resource(ProductList, '/products')
+        api.add_resource(ProductResource, '/products/<int:product_id>')
+        api.add_resource(OrderList, '/orders')
 
-    return app
+        # Create database tables
+        with app.app_context():
+            db.create_all()
+
+        return app
+    except Exception as e:
+        print(f"An error occurred during app initialization: {e}")
+        return None
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True)
+    if app:
+        try:
+            app.run(debug=True)
+        except Exception as e:
+            print(f"An error occurred while running the app: {e}")
+    else:
+        print("Failed to initialize the Flask application.")
